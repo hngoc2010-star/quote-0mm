@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<title>Plywood Quote</title>
+
+<style>
+
+body{
+font-family:-apple-system,BlinkMacSystemFont,Arial;
+background:#f2f2f2;
+margin:0;
+display:flex;
+justify-content:center;
+padding:14px;
+}
+
+.app{
+
+width:100%;
+max-width:360px;
+
+background:white;
+padding:16px;
+
+border-radius:10px;
+
+box-shadow:0 4px 12px rgba(0,0,0,.1);
+}
+
+h3{
+
+text-align:center;
+margin-bottom:10px;
+font-size:18px;
+
+}
+
+.row{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+margin-bottom:7px;
+
+font-size:14px;
+
+}
+
+.row input{
+
+width:90px;
+
+padding:6px;
+
+font-size:16px;
+
+border:1px solid #ccc;
+
+border-radius:4px;
+
+text-align:right;
+
+}
+
+.result{
+
+margin-top:12px;
+
+font-size:14px;
+
+font-weight:600;
+
+}
+
+.result div{
+
+display:flex;
+justify-content:space-between;
+
+margin:4px 0;
+
+}
+
+.blue{color:#2563eb;}
+
+.red{color:#dc2626;}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+<h3>Plywood Quote</h3>
+
+<div class="row">Thickness (mm)<input id="thickness"></div>
+
+<div class="row">Bundles<input id="bundle"></div>
+
+<div class="row">Pcs/Bundle<input id="pcsBundle"></div>
+
+<div class="row">USD Rate<input id="usd"></div>
+
+<div class="row">EXW (VND/pcs)<input id="exwpcs"></div>
+
+<div class="row">EXW (VND/cbm)<input id="exwcbm"></div>
+
+<div class="row">Logistics (VND)<input id="logistics"></div>
+
+<div class="row">CFR price (USD)<input id="cfr"></div>
+
+<div class="result">
+
+<div>Total PCS <span id="pcs">0</span></div>
+
+<div>CBM Buy <span id="buy">0</span></div>
+
+<div>CBM Sell <span id="sell">0</span></div>
+
+<div>CBM Diff <span id="diff">0</span></div>
+
+<div>Profit / Container <span id="profit">0</span></div>
+
+</div>
+
+</div>
+
+<script>
+
+const WIDTH=1.22
+const LENGTH=2.44
+
+document.querySelectorAll("input").forEach(i=>{
+i.addEventListener("input",calc)
+})
+
+function num(id){
+
+return parseFloat(
+document.getElementById(id).value.replace(/,/g,'')
+)||0
+
+}
+
+function fmt(x){
+
+return Number(x).toLocaleString("en-US",{maximumFractionDigits:2})
+
+}
+
+function calc(){
+
+let thickness=num("thickness")
+
+let bundle=num("bundle")
+
+let pcsBundle=num("pcsBundle")
+
+let usd=num("usd")
+
+let exwpcs=num("exwpcs")
+
+let exwcbm=num("exwcbm")
+
+let logistics=num("logistics")
+
+let cfr=num("cfr")
+
+let totalPcs=bundle*pcsBundle
+
+let cbmPc=(thickness/1000)*WIDTH*LENGTH
+
+let cbmBuy=totalPcs*cbmPc
+
+let cbmSell=cbmBuy
+
+let cbmDiff=cbmSell-cbmBuy
+
+let exwTotal=0
+
+if(exwpcs>0){
+
+exwTotal=totalPcs*exwpcs
+
+}
+
+else if(exwcbm>0){
+
+exwTotal=cbmBuy*exwcbm
+
+}
+
+let totalCfr=exwTotal+logistics
+
+let selling=cbmSell*cfr*usd
+
+let profit=Math.round(selling-totalCfr)
+
+document.getElementById("pcs").innerText=fmt(totalPcs)
+
+document.getElementById("buy").innerText=fmt(cbmBuy)
+
+document.getElementById("sell").innerText=fmt(cbmSell)
+
+document.getElementById("diff").innerText=fmt(cbmDiff)
+
+let p=document.getElementById("profit")
+
+p.innerText=fmt(profit)
+
+p.className=profit>=0?"blue":"red"
+
+}
+
+</script>
+
+</body>
+
+</html>
